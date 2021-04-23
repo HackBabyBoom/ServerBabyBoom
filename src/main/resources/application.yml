@@ -1,0 +1,13 @@
+server:
+  port: ${port:9000}
+
+spring:
+  application:
+    name: demo
+
+  datasource:
+    platform: mysql
+    url: jdbc:mysql://dungiapp.ctezwyeyfqua.ap-northeast-2.rds.amazonaws.com/babyboom?autoReconnect=true
+    username: dungiapp
+    password: dungiapp
+    driver-class-name: com.mysql.cj.jdbc.Driver
