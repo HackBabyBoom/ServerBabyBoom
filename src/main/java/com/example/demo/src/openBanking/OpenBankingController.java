@@ -29,7 +29,7 @@ import org.apache.logging.log4j.Logger;
 
 @RestController
 @RequestMapping("/open")
-public class OpenBankingController { // 가계부 기능의 모든은행의 계좌조회 관련 Class ( 금융결제원 Open API 사용 )
+public class OpenBankingController { // 가계부 기능 - 모든은행의 계좌조회 관련 Class ( 금융결제원 Open API 사용 )
 
     private String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiIxMTAwNzcyMDgyIiwic2NvcGUiOlsiaW5xdWlyeSIsImxvZ2luIiwidHJhbnNmZXIiXSwiaXNzIjoiaHR0cHM6Ly93d3cub3BlbmJhbmtpbmcub3Iua3IiLCJleHAiOjE2MjcwNTUxODUsImp0aSI6IjkyZWU3NzZjLTIyMDUtNGIxMS1hNTJkLTJiY2Y3MmVjOTY3OSJ9.8vBKGflc8RtuqSAEIaP2DynZG4RabYYywGHVedGxfqg";
     private String header = "Bearer " + token;
@@ -68,7 +68,7 @@ public class OpenBankingController { // 가계부 기능의 모든은행의 계�
 
     @ResponseBody
     @GetMapping("/user")
-    public void getUserInfo(){
+    public void getUserInfo(){ // 사용자 정보
 
         String apiURL = "https://developers.kftc.or.kr/proxy/user/me";
         apiURL = apiURL + "?user_seq_no=" + user_seq_no;
@@ -79,7 +79,7 @@ public class OpenBankingController { // 가계부 기능의 모든은행의 계�
     }
 
     @ResponseBody
-    @GetMapping("/getAllAccountList")
+    @GetMapping("/getAllAccountList") // 사용자의 전체 계좌 정보
     public JSONArray getAllAccountList() throws ParseException {
 
         String apiURL = "https://developers.kftc.or.kr/proxy/account/list";
@@ -118,7 +118,8 @@ public class OpenBankingController { // 가계부 기능의 모든은행의 계�
 
         String from_date = "20210101"; // 사용자가 UI를 통해 입력한 변수를 넣을 예정
         String to_date = "20210401"; // 일단은 TEST를 위해 넣어둠
-        String [] befor_inquiry_trace_info = {"123","111"};
+
+        String [] befor_inquiry_trace_info = {"333","222","123","111"};
 
         JSONArray allAccountList = getAllAccountList();
         String [] fintechNums = new String[allAccountList.size()];
@@ -144,14 +145,15 @@ public class OpenBankingController { // 가계부 기능의 모든은행의 계�
             JSONObject jsonObj = (JSONObject) jsonPar.parse(result);
 
             JSONArray resListArray = (JSONArray)jsonObj.get("res_list");
+            JSONArray accountTransactionList = new JSONArray(); // 데이터 분석 시 파이썬으로 넘겨줄 JSONArray
 
-            JSONArray accountTransactionList = new JSONArray();
-
-            for(Object ob : resListArray){ // 사실 전체 json 넘겨주면 파이썬에서 column만 뽑으면 훨신 수월함
+            for(Object ob : resListArray){ // 사실 전체 json 넘겨주고, 파이썬에서 column만 뽑으면 훨신 수월함 -> 코드의 효율성을 보고 제거 유무 결정
                 JSONObject tempObj = (JSONObject)ob;
                 Map <String,String> map = new HashMap<>();
+                String date = (String) tempObj.get("tran_date");
                 String store = (String) tempObj.get("print_content");
                 String amount = (String) tempObj.get("tran_amt");
+                map.put("tran_date",date);
                 map.put("print_content",store);
                 map.put("tran_amt",amount);
                 accountTransactionList.add(new JSONObject(map));
@@ -161,8 +163,9 @@ public class OpenBankingController { // 가계부 기능의 모든은행의 계�
 
         }
 
-        System.out.println(allAccountTransactionLists[0]);
-        System.out.println(allAccountTransactionLists[1]);
+        for(JSONArray jsonObject : allAccountTransactionLists){
+            System.out.println(jsonObject);
+        }
 
     }
 
