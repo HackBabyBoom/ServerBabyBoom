@@ -30,6 +30,8 @@ com/example/demo/src/WebSecurityConfig.java
  com.example.demo.src.WebSecurityConfig
 com/example/demo/utils/JwtService.java
  com.example.demo.utils.JwtService
+com/example/demo/src/openBanking/OpenBankingController.java
+ com.example.demo.src.openBanking.OpenBankingController
 com/example/demo/src/test/TestController.java
  com.example.demo.src.test.TestController
 com/example/demo/src/user/UserProvider.java
