@@ -116,8 +116,8 @@ public class OpenBankingController { // 가계부 기능의 모든은행의 계�
         int Min = 111111111;
         int Max = 999999999;
 
-        String from_date = "20210101"; // 사용자가 버튼을 통해 입력받는 로직으로 추후 수정 예정
-        String to_date = "20210401"; // 사용자가 버튼을 통해 입력받는 로직으로 추후 수정 예정
+        String from_date = "20210101"; // 사용자가 UI를 통해 입력한 변수를 넣을 예정
+        String to_date = "20210401"; // 일단은 TEST를 위해 넣어둠
         String [] befor_inquiry_trace_info = {"123","111"};
 
         JSONArray allAccountList = getAllAccountList();
