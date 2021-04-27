@@ -105,8 +105,8 @@ public class OpenBankingController { // 가계부 기능 - 모든은행의 계�
     }
 
     @ResponseBody
-    @GetMapping("/getAllAccountWithdrawal")
-    public int [] getAllAccountWithdraw() throws ParseException { // 각 오픈뱅킹 계좌 별 총 출금액
+    @GetMapping("/getAllAccountWithdrawal")  // 각 오픈뱅킹 계좌 별 총 출금액
+    public int [] getAllAccountWithdrawal() throws ParseException {
         JSONArray[] allAccountTransactionLists = getAllAccountTransactionList();
         int [] allAcountWithdrawlList = new int [allAccountTransactionLists.length];
 
@@ -126,13 +126,14 @@ public class OpenBankingController { // 가계부 기능 - 모든은행의 계�
 
     @ResponseBody
     @GetMapping("/getSumOfAllAccountWithdrawal")
-    public int getSumOfAllAccountWithdraw() throws ParseException { // 전체 오픈뱅킹 출금액
-        int [] allAcountWithdrawlList = getAllAccountWithdraw();
+    public String getSumOfAllAccountWithdrawal() throws ParseException { // 전체 오픈뱅킹 출금액
+        int [] allAcountWithdrawallList = getAllAccountWithdrawal();
         int sum = 0;
-        for(int withDrawl : allAcountWithdrawlList){
+        for(int withDrawl : allAcountWithdrawallList){
             sum += withDrawl;
         }
-        return sum;
+        String sumOfAllAccountWithdrawal = String.format("%,d", sum);
+        return sumOfAllAccountWithdrawal;
     }
 
     @ResponseBody
