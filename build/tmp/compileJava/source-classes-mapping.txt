@@ -34,11 +34,11 @@ com/example/demo/src/user/UserProvider.java
  com.example.demo.src.user.UserProvider
 com/example/demo/src/test/TestController.java
  com.example.demo.src.test.TestController
-com/example/demo/src/externalOpenAPI/OpenBankingController.java
- com.example.demo.src.externalOpenAPI.OpenBankingController
-com/example/demo/src/externalOpenAPI/GiroController.java
- com.example.demo.src.externalOpenAPI.GiroController
 com/example/demo/src/wooriOpenAPI/UserDao.java
  com.example.demo.src.wooriOpenAPI.UserDao
+com/example/demo/src/externalOpenAPI/GiroController.java
+ com.example.demo.src.externalOpenAPI.GiroController
 com/example/demo/src/wooriOpenAPI/MainPageController.java
  com.example.demo.src.wooriOpenAPI.MainPageController
+com/example/demo/src/externalOpenAPI/OpenBankingController.java
+ com.example.demo.src.externalOpenAPI.OpenBankingController
