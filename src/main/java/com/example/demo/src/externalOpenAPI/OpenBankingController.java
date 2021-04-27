@@ -1,7 +1,5 @@
-package com.example.demo.src.openBanking;
+package com.example.demo.src.externalOpenAPI;
 
-import com.fasterxml.jackson.annotation.JsonValue;
-import com.google.gson.*;
 //import org.apache.tomcat.util.json.JSONParser;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -14,13 +12,10 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.json.simple.parser.JSONParser;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
 
 
 import org.apache.logging.log4j.LogManager;
@@ -146,6 +141,8 @@ public class OpenBankingController { // 가계부 기능 - 모든은행의 계�
 
             JSONArray resListArray = (JSONArray)jsonObj.get("res_list");
             JSONArray accountTransactionList = new JSONArray(); // 데이터 분석 시 파이썬으로 넘겨줄 JSONArray
+
+            System.out.println(resListArray);
 
             for(Object ob : resListArray){ // 사실 전체 json 넘겨주고, 파이썬에서 column만 뽑으면 훨신 수월함 -> 코드의 효율성을 보고 제거 유무 결정
                 JSONObject tempObj = (JSONObject)ob;
