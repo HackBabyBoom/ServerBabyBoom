@@ -74,7 +74,7 @@ public class OpenBankingController { // 가계부 기능 - 모든은행의 계�
     }
 
     @ResponseBody
-    @GetMapping("/getAllAccountList") // 사용자의 전체 계좌 정보
+    @GetMapping("/getAllAccountList") // 모든 오픈뱅킹 계좌 정보
     public JSONArray getAllAccountList() throws ParseException {
 
         String apiURL = "https://developers.kftc.or.kr/proxy/account/list";
@@ -105,8 +105,39 @@ public class OpenBankingController { // 가계부 기능 - 모든은행의 계�
     }
 
     @ResponseBody
+    @GetMapping("/getAllAccountWithdrawal")
+    public int [] getAllAccountWithdraw() throws ParseException { // 각 오픈뱅킹 계좌 별 총 출금액
+        JSONArray[] allAccountTransactionLists = getAllAccountTransactionList();
+        int [] allAcountWithdrawlList = new int [allAccountTransactionLists.length];
+
+        for(int accountIndex=0; accountIndex< allAccountTransactionLists.length; accountIndex++){
+            for(Object ob : allAccountTransactionLists[accountIndex]){
+                JSONObject jsonOb = (JSONObject)ob;
+                if(jsonOb.get("inout_type").equals("출금")){
+                    allAcountWithdrawlList[accountIndex] += Integer.parseInt(String.valueOf(jsonOb.get("tran_amt")));
+                }
+            }
+        }
+
+        // 하나, 신한, 기업, 우리
+        System.out.println(allAcountWithdrawlList[0] + " " + allAcountWithdrawlList[1] + " " + allAcountWithdrawlList[2] + " " + allAcountWithdrawlList[3]);
+        return allAcountWithdrawlList;
+    }
+
+    @ResponseBody
+    @GetMapping("/getSumOfAllAccountWithdrawal")
+    public int getSumOfAllAccountWithdraw() throws ParseException { // 전체 오픈뱅킹 출금액
+        int [] allAcountWithdrawlList = getAllAccountWithdraw();
+        int sum = 0;
+        for(int withDrawl : allAcountWithdrawlList){
+            sum += withDrawl;
+        }
+        return sum;
+    }
+
+    @ResponseBody
     @GetMapping("/getAllAccountTransactionList")
-    public void getAllAccountTransactionList() throws ParseException {
+    public JSONArray[] getAllAccountTransactionList() throws ParseException { // 모든 오픈뱅킹 계좌의 거래내역
 
         int Min = 111111111;
         int Max = 999999999;
@@ -148,9 +179,11 @@ public class OpenBankingController { // 가계부 기능 - 모든은행의 계�
                 JSONObject tempObj = (JSONObject)ob;
                 Map <String,String> map = new HashMap<>();
                 String date = (String) tempObj.get("tran_date");
+                String inout_type = (String) tempObj.get("inout_type");
                 String store = (String) tempObj.get("print_content");
                 String amount = (String) tempObj.get("tran_amt");
                 map.put("tran_date",date);
+                map.put("inout_type",inout_type);
                 map.put("print_content",store);
                 map.put("tran_amt",amount);
                 accountTransactionList.add(new JSONObject(map));
@@ -163,6 +196,8 @@ public class OpenBankingController { // 가계부 기능 - 모든은행의 계�
         for(JSONArray jsonObject : allAccountTransactionLists){
             System.out.println(jsonObject);
         }
+
+        return allAccountTransactionLists;
 
     }
 
