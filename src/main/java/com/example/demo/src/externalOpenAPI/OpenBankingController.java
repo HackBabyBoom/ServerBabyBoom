@@ -230,4 +230,72 @@ public class OpenBankingController { // 가계부 기능 - 모든은행의 계�
     }
 
 
+    @ResponseBody
+    @GetMapping("/getDepositList")  // 날짜 별 총 입금액 배열
+    public JSONObject getDepositList() throws ParseException {
+        JSONArray[] allAccountTransactionLists = getAllAccountTransactionList();
+        Map <String, Integer> map = new HashMap<>();
+
+        for(int accountIndex=0; accountIndex< allAccountTransactionLists.length; accountIndex++){
+            for(Object ob : allAccountTransactionLists[accountIndex]){
+                JSONObject jsonOb = (JSONObject)ob;
+                if(jsonOb.get("inout_type").equals("입금")){
+                    if( map.containsKey(jsonOb.get("tran_date"))){
+                        Integer deposit = map.get(jsonOb.get("tran_date")) + Integer.parseInt(String.valueOf(jsonOb.get("tran_amt")));
+                        map.replace((String) jsonOb.get("tran_date"),deposit);
+                    }else{
+                        map.put((String) jsonOb.get("tran_date"),Integer.parseInt(String.valueOf(jsonOb.get("tran_amt"))));
+                    }
+
+                }
+            }
+        }
+
+        JSONObject depositList= new JSONObject(map);
+        return depositList;
+    }
+
+    @ResponseBody
+    @GetMapping("/getWithdrawalList")  // 날짜 별 총 출금액 배열
+    public JSONObject getWithdrawalList() throws ParseException {
+        JSONArray[] allAccountTransactionLists = getAllAccountTransactionList();
+        Map <String, Integer> map = new HashMap<>();
+
+        for(int accountIndex=0; accountIndex< allAccountTransactionLists.length; accountIndex++){
+            for(Object ob : allAccountTransactionLists[accountIndex]){
+                JSONObject jsonOb = (JSONObject)ob;
+                if(jsonOb.get("inout_type").equals("출금")){
+                    if( map.containsKey(jsonOb.get("tran_date"))){
+                        Integer withdrawal = map.get(jsonOb.get("tran_date")) + Integer.parseInt(String.valueOf(jsonOb.get("tran_amt")));
+                        map.replace((String) jsonOb.get("tran_date"),withdrawal);
+                    }else{
+                        map.put((String) jsonOb.get("tran_date"),Integer.parseInt(String.valueOf(jsonOb.get("tran_amt"))));
+                    }
+
+                }
+            }
+        }
+
+        JSONObject withdrawalList= new JSONObject(map);
+        return withdrawalList;
+    }
+
+
+//    @ResponseBody
+//    @GetMapping("/getDepositOfDay")  // 날짜 별 입금액 배열
+//    public String getDepositOfDay(String date) throws ParseException {
+//        JSONObject depositList = getDepositList();
+//        String depositOfDay= ""; // 0을 넣을지 blank 로 할지 고민중
+//        if(depositList.containsKey(date)){
+//
+//        }
+//            return
+//
+//        return
+//    }
+
+    // 음 양 계산할 때 필요 -> 날짜 별 총 입금 배열, 날짜 별 총 출금 배열
+    // 각 날짜별 입금, 출금 계산 시 필요 -> 해당 날짜의 입금 배열(날짜, 금액, 이용내역), 해당 날짜의 출금 내역(날짜, 금액, 이용내역), 해당 날짜의 총 입출금 금액
+
+
 }
