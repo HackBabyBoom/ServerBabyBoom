@@ -125,6 +125,14 @@ public class OpenBankingController { // 가계부 기능 - 모든은행의 계�
     }
 
     @ResponseBody
+    @GetMapping("/getWooriWithdrawal")
+    public String getWooriWithdrawal() throws ParseException {
+        int [] allAcountWithdrawlList = getAllAccountWithdrawal();
+        String WooriWithdrawal = String.format("%,d", allAcountWithdrawlList[3]);
+        return WooriWithdrawal;
+    }
+
+        @ResponseBody
     @GetMapping("/getSumOfAllAccountWithdrawal")
     public String getSumOfAllAccountWithdrawal() throws ParseException { // 전체 오픈뱅킹 출금액
         int [] allAcountWithdrawallList = getAllAccountWithdrawal();
