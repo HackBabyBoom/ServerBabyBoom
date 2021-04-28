@@ -218,15 +218,12 @@ public class OpenBankingController { // 가계부 기능 - 모든은행의 계�
                 map.put("tran_amt",amount);
                 accountTransactionList.add(new JSONObject(map));
             }
-
             allAccountTransactionLists[index] = accountTransactionList;
-
         }
 
         for(JSONArray jsonObject : allAccountTransactionLists){
             System.out.println(jsonObject);
         }
-
         return allAccountTransactionLists;
 
     }
@@ -333,23 +330,44 @@ public class OpenBankingController { // 가계부 기능 - 모든은행의 계�
     }
 
 
+    @ResponseBody
+    @GetMapping("/getDepositListByDay")  // 날짜 별 입금 내역
+    public JSONArray getDepositListByDay(String date) throws ParseException {
+//        date = "20210428"; 테스트용
+        JSONArray[] allAccountTransactionLists = getAllAccountTransactionList();
+        JSONArray depositListByDay = new JSONArray();
 
+        for(int accountIndex=0; accountIndex< allAccountTransactionLists.length; accountIndex++){
+            for(Object ob : allAccountTransactionLists[accountIndex]){
+                JSONObject jsonOb = (JSONObject)ob;
+                if(jsonOb.get("inout_type").equals("입금") && jsonOb.get("tran_date").equals(date)){
+                    jsonOb.remove("inout_type");
+                    jsonOb.remove("tran_date");
+                    depositListByDay.add(jsonOb);
+                }
+            }
+        }
+        return depositListByDay;
+    }
 
-//    @ResponseBody
-//    @GetMapping("/getDepositOfDay")  // 날짜 별 입금액 배열
-//    public String getDepositOfDay(String date) throws ParseException {
-//        JSONObject depositList = getDepositList();
-//        String depositOfDay= ""; // 0을 넣을지 blank 로 할지 고민중
-//        if(depositList.containsKey(date)){
-//
-//        }
-//            return
-//
-//        return
-//    }
+    @ResponseBody
+    @GetMapping("/getWithdrawalListByDay")  // 날짜 별 출금 내역
+    public JSONArray getWithdrawalListByDay(String date) throws ParseException {
+//        date = "20210428"; // 테스트용
+        JSONArray[] allAccountTransactionLists = getAllAccountTransactionList();
+        JSONArray withdrawalListByDay = new JSONArray();
 
-    // 음 양 계산할 때 필요 -> 날짜 별 총 입금 배열, 날짜 별 총 출금 배열 -> 둘 다 oo
-    // 각 날짜별 입금, 출금 계산 시 필요 -> 해당 날짜의 입금 배열( 금액, 이용내역), 해당 날짜의 출금 내역(날짜, 금액, 이용내역), 해당 날짜의 총 입출금 금액
-
+        for(int accountIndex=0; accountIndex< allAccountTransactionLists.length; accountIndex++){
+            for(Object ob : allAccountTransactionLists[accountIndex]){
+                JSONObject jsonOb = (JSONObject)ob;
+                if(jsonOb.get("inout_type").equals("출금") && jsonOb.get("tran_date").equals(date)){
+                    jsonOb.remove("inout_type");
+                    jsonOb.remove("tran_date");
+                    withdrawalListByDay.add(jsonOb);
+                }
+            }
+        }
+        return withdrawalListByDay;
+    }
 
 }
