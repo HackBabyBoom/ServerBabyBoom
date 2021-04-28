@@ -12,6 +12,8 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -232,33 +234,44 @@ public class OpenBankingController { // 가계부 기능 - 모든은행의 계�
 
     @ResponseBody
     @GetMapping("/getDepositList")  // 날짜 별 총 입금액 배열
-    public JSONObject getDepositList() throws ParseException {
+    public JSONArray getDepositList() throws ParseException {
         JSONArray[] allAccountTransactionLists = getAllAccountTransactionList();
+        JSONArray depositList = new JSONArray();
         Map <String, Integer> map = new HashMap<>();
 
         for(int accountIndex=0; accountIndex< allAccountTransactionLists.length; accountIndex++){
             for(Object ob : allAccountTransactionLists[accountIndex]){
                 JSONObject jsonOb = (JSONObject)ob;
+
                 if(jsonOb.get("inout_type").equals("입금")){
-                    if( map.containsKey(jsonOb.get("tran_date"))){
+                    if(map.containsKey(jsonOb.get("tran_date"))){
                         Integer deposit = map.get(jsonOb.get("tran_date")) + Integer.parseInt(String.valueOf(jsonOb.get("tran_amt")));
                         map.replace((String) jsonOb.get("tran_date"),deposit);
                     }else{
                         map.put((String) jsonOb.get("tran_date"),Integer.parseInt(String.valueOf(jsonOb.get("tran_amt"))));
                     }
-
                 }
             }
         }
 
-        JSONObject depositList= new JSONObject(map);
+        String [] mapToStringArr = map.toString().replace("{","").replace("}","").split(",");
+        Arrays.sort(mapToStringArr);
+        for(String str : mapToStringArr){
+            String [] strArr = str.split("=");
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("tran_date",strArr[0].replace(" ",""));
+            jsonObject.put("tran_amt",Integer.parseInt(strArr[1]));
+            depositList.add(jsonObject);
+        }
         return depositList;
     }
 
+
     @ResponseBody
     @GetMapping("/getWithdrawalList")  // 날짜 별 총 출금액 배열
-    public JSONObject getWithdrawalList() throws ParseException {
+    public JSONArray getWithdrawalList() throws ParseException {
         JSONArray[] allAccountTransactionLists = getAllAccountTransactionList();
+        JSONArray withdrawalList = new JSONArray();
         Map <String, Integer> map = new HashMap<>();
 
         for(int accountIndex=0; accountIndex< allAccountTransactionLists.length; accountIndex++){
@@ -271,14 +284,55 @@ public class OpenBankingController { // 가계부 기능 - 모든은행의 계�
                     }else{
                         map.put((String) jsonOb.get("tran_date"),Integer.parseInt(String.valueOf(jsonOb.get("tran_amt"))));
                     }
-
                 }
             }
         }
 
-        JSONObject withdrawalList= new JSONObject(map);
+        String [] mapToStringArr = map.toString().replace("{","").replace("}","").replace(" ","").split(",");
+        Arrays.sort(mapToStringArr);
+        for(String str : mapToStringArr){
+            String [] strArr = str.split("=");
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("tran_date",strArr[0]);
+            jsonObject.put("tran_amt",Integer.parseInt(strArr[1])*(-1));
+            withdrawalList.add(jsonObject);
+        }
         return withdrawalList;
     }
+
+
+    @ResponseBody
+    @GetMapping("/getList")  // 날짜 별 (입금-출금) 리스트
+    public JSONArray getList() throws ParseException { // 적절한 함수명으로 추후 수정 예정
+
+        JSONArray depositList = getDepositList();
+        JSONArray withdrawalList = getWithdrawalList();
+        JSONArray finalList = new JSONArray();
+
+        for (Object withdrawal : withdrawalList) {
+            finalList.add(withdrawal);
+        }
+
+        for (Object deposit : depositList) {
+            JSONObject depositObject = (JSONObject) deposit;
+            for (int index = 0; index < finalList.size(); index++) {
+                JSONObject withdrawalObject = (JSONObject) finalList.get(index);
+                String trandateOfWithdrawal = String.valueOf(withdrawalObject.get("tran_date"));
+                String trandateOfDeposit = String.valueOf(depositObject.get("tran_date"));
+                if (trandateOfWithdrawal.equals(trandateOfDeposit)) {
+                    Integer money = (Integer) withdrawalObject.get("tran_amt") + (Integer) depositObject.get("tran_amt");
+                    ((JSONObject) finalList.get(index)).replace("tran_amt",money);
+                    break;
+                }else if(trandateOfDeposit.compareTo(trandateOfWithdrawal) < 0 ){
+                    finalList.add(index,depositObject);
+                    break;
+                }
+            }
+        }
+        return finalList;
+    }
+
+
 
 
 //    @ResponseBody
@@ -294,8 +348,8 @@ public class OpenBankingController { // 가계부 기능 - 모든은행의 계�
 //        return
 //    }
 
-    // 음 양 계산할 때 필요 -> 날짜 별 총 입금 배열, 날짜 별 총 출금 배열
-    // 각 날짜별 입금, 출금 계산 시 필요 -> 해당 날짜의 입금 배열(날짜, 금액, 이용내역), 해당 날짜의 출금 내역(날짜, 금액, 이용내역), 해당 날짜의 총 입출금 금액
+    // 음 양 계산할 때 필요 -> 날짜 별 총 입금 배열, 날짜 별 총 출금 배열 -> 둘 다 oo
+    // 각 날짜별 입금, 출금 계산 시 필요 -> 해당 날짜의 입금 배열( 금액, 이용내역), 해당 날짜의 출금 내역(날짜, 금액, 이용내역), 해당 날짜의 총 입출금 금액
 
 
 }
