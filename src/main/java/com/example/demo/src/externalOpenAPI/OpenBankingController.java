@@ -263,6 +263,7 @@ public class OpenBankingController { // 가계부 기능 - 모든은행의 계�
         return depositList;
     }
 
+//    연경이가짠거
 
     @ResponseBody
     @GetMapping("/getWithdrawalList")  // 날짜 별 총 출금액 배열
