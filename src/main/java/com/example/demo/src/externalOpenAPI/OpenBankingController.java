@@ -1,25 +1,24 @@
 package com.example.demo.src.externalOpenAPI;
 
 //import org.apache.tomcat.util.json.JSONParser;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.json.simple.parser.JSONParser;
-
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 
 @RestController
@@ -221,6 +220,8 @@ public class OpenBankingController { // 가계부 기능 - 모든은행의 계�
 
         }
 
+
+
         for(JSONArray jsonObject : allAccountTransactionLists){
             System.out.println(jsonObject);
         }
@@ -229,6 +230,26 @@ public class OpenBankingController { // 가계부 기능 - 모든은행의 계�
 
     }
 
+    @ResponseBody
+    @GetMapping("/getRankList") // flask에서 매장 랭크를 받아옴
+    public JSONObject getRankList() throws  ParseException{
+
+        JSONObject getRankList  = getRankList();
+
+
+        String apiURL = "http://localhost:5000/getRank"; //flask 서버
+        String result = goConnection(apiURL);
+        logger.info(result);
+
+        JSONParser jsonPar = new JSONParser();
+        JSONObject jsonObj = (JSONObject) jsonPar.parse(result);
+        JSONObject RankList = (JSONObject) jsonPar.parse("tran_amt");
+
+
+        return RankList;
+
+
+    }
 
     @ResponseBody
     @GetMapping("/getDepositList")  // 날짜 별 총 입금액 배열
@@ -257,8 +278,9 @@ public class OpenBankingController { // 가계부 기능 - 모든은행의 계�
 
     @ResponseBody
     @GetMapping("/getWithdrawalList")  // 날짜 별 총 출금액 배열
-    public JSONObject getWithdrawalList() throws ParseException {
+    public JSONArray getWithdrawalList() throws ParseException {
         JSONArray[] allAccountTransactionLists = getAllAccountTransactionList();
+
         Map <String, Integer> map = new HashMap<>();
 
         for(int accountIndex=0; accountIndex< allAccountTransactionLists.length; accountIndex++){
@@ -298,4 +320,9 @@ public class OpenBankingController { // 가계부 기능 - 모든은행의 계�
     // 각 날짜별 입금, 출금 계산 시 필요 -> 해당 날짜의 입금 배열(날짜, 금액, 이용내역), 해당 날짜의 출금 내역(날짜, 금액, 이용내역), 해당 날짜의 총 입출금 금액
 
 
+
+
+
+
 }
+
