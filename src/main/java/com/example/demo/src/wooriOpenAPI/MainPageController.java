@@ -18,7 +18,7 @@ import java.text.DecimalFormat;
 
 @RestController
 @RequestMapping("/main")
-public class MainPageController {
+public class MainPageController { // 앱의 메인화면에서 사용되는 Controller
 
     UserDao userDao = new UserDao();
 
