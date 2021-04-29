@@ -3,10 +3,7 @@ package com.example.demo.src.wooriOpenAPI;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -99,8 +96,8 @@ public class TransferPageController {
     }
 
     @ResponseBody
-    @GetMapping("/doAccountTransferTest")
-    public void doAccountTransferTest() throws ParseException { // 당행 계좌이체
+    @GetMapping ("/doAccountTransferTest")
+    public String doAccountTransferTest() throws ParseException { // 당행 계좌이체
 
         try {
 
@@ -108,8 +105,12 @@ public class TransferPageController {
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
             System.out.println(userDao.getAppKey());
-            conn.setRequestProperty("appkey", userDao.getAppKey());
-            conn.setRequestProperty("token", "53Sol4YO1x6SBvDjdSueKEqqjUzBMo4E");
+            conn.setRequestProperty("appKey", userDao.getAppKey());
+            conn.setRequestProperty("Accept", "application/json");
+            conn.setRequestProperty("Content-Type", "application/json charset=utf-8");
+            conn.setDoOutput(true);
+
+//            conn.setRequestProperty("token", "53Sol4YO1x6SBvDjdSueKEqqjUzBMo4E");
 
             String parameters = "{\n" +
                     "  \"dataHeader\": {\n" +
@@ -131,30 +132,32 @@ public class TransferPageController {
                     "  }\n" +
                     "}";
 
-            conn.setDoOutput(true);
+
             DataOutputStream wr = new DataOutputStream(conn.getOutputStream());
             wr.writeBytes(parameters);
             wr.flush();
             wr.close();
 
-            //System.out.println("Response code: " + conn.getResponseCode());
-            BufferedReader rd;
-            if(conn.getResponseCode() >= 200 && conn.getResponseCode() <= 300) {
-                rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-            } else {
-                rd = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
+            int responseCode = conn.getResponseCode();
+            System.out.println(responseCode + " 응답코드 ");
+            BufferedReader br;
+            if(responseCode==200) { // 정상 호출
+                br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            } else {  // 에러 발생
+                br = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
             }
-            StringBuilder sb = new StringBuilder();
-            String line;
-            while ((line = rd.readLine()) != null) {
-                sb.append(line);
+            String inputLine;
+            StringBuffer response = new StringBuffer();
+            while ((inputLine = br.readLine()) != null) {
+                response.append(inputLine);
             }
-            rd.close();
-            conn.disconnect();
-            System.out.println(sb.toString());
+            br.close();
+            System.out.println(response.toString());
+            return response.toString();
 
         } catch (Exception e) {
             System.out.println(e);
+            return String.valueOf(e);
         }
 
     }
