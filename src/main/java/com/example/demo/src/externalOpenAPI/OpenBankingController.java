@@ -370,4 +370,23 @@ public class OpenBankingController { // 가계부 기능 - 모든은행의 계�
         return withdrawalListByDay;
     }
 
+
+    @ResponseBody
+    @GetMapping("/getRankList") // flask에서 매장 랭크를 받아옴
+    public JSONObject getRankList() throws  ParseException{
+
+        JSONObject getRankList  = getRankList();
+
+        String apiURL = "http://localhost:5000/getRank"; //flask 서버
+        String result = goConnection(apiURL);
+        logger.info(result);
+
+        JSONParser jsonPar = new JSONParser();
+        JSONObject jsonObj = (JSONObject) jsonPar.parse(result);
+        JSONObject RankList = (JSONObject) jsonPar.parse("tran_amt");
+
+        return RankList;
+
+    }
+
 }
