@@ -61,6 +61,47 @@ public class MainPageController { // 앱의 메인화면에서 사용되는 Cont
 
 
     @ResponseBody
+    @GetMapping("/getAllWooriAccountInfo")
+    public JSONArray getAllWooriAccountInfo() throws ParseException { // 우리은행 전체 계좌 정보 조회
+
+        String apiURL = "https://openapi.wooribank.com:444/oai/wb/v1/finance/getIndivAllAccInfo";
+        String parameters = "{\n" +
+                "  \"dataHeader\": {\n" +
+                "    \"UTZPE_CNCT_IPAD\": \"\",\n" +
+                "    \"UTZPE_CNCT_MCHR_UNQ_ID\": \"\",\n" +
+                "    \"UTZPE_CNCT_TEL_NO_TXT\": \"\",\n" +
+                "    \"UTZPE_CNCT_MCHR_IDF_SRNO\": \"\",\n" +
+                "    \"UTZ_MCHR_OS_DSCD\": \"\",\n" +
+                "    \"UTZ_MCHR_OS_VER_NM\": \"\",\n" +
+                "    \"UTZ_MCHR_MDL_NM\": \"\",\n" +
+                "    \"UTZ_MCHR_APP_VER_NM\": \"\"\n" +
+                "  },\n" +
+                "  \"dataBody\": {}\n" +
+                "}";
+
+        String response = goConnection(apiURL,parameters);
+        JSONParser jsonPar = new JSONParser();
+        JSONObject jsonObj = (JSONObject) jsonPar.parse(String.valueOf(response));
+        JSONArray accountArray = (JSONArray)((JSONObject)jsonObj.get("dataBody")).get("GRID");
+
+        for(int index=0; index<accountArray.size(); index++){
+            ((JSONObject)accountArray.get(index)).remove("NEW_DT");
+            ((JSONObject)accountArray.get(index)).remove("ADNT_RGS_YN");
+            ((JSONObject)accountArray.get(index)).remove("ACT_STCD");
+            ((JSONObject)accountArray.get(index)).remove("FAXC_BAL");
+            ((JSONObject)accountArray.get(index)).remove("ACCT_KND");
+            ((JSONObject)accountArray.get(index)).remove("CUCD");
+            ((JSONObject)accountArray.get(index)).remove("KRW");
+            ((JSONObject)accountArray.get(index)).remove("XPR_DT");
+            ((JSONObject)accountArray.get(index)).remove("PSKL_ACT_YN");
+        }
+
+        return accountArray;
+
+    }
+
+
+    @ResponseBody
     @GetMapping("/getWooriBalance")
     public String getWooriBalance() throws ParseException { // 우리은행 계좌 잔액
 
