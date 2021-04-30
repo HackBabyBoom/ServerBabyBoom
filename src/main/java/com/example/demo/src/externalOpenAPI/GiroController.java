@@ -2,6 +2,8 @@ package com.example.demo.src.externalOpenAPI;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -19,66 +21,22 @@ import org.json.simple.*;
 
 @RestController
 @RequestMapping("/giro")
-public class GiroController { // 일단 코드 작성하던 도중 보류
+public class GiroController { // 농협 API 이용
 
     private String token = "5ee315ef5aa3ed99a602af7c52eeaf27be8e45dcc77fce8e54365ec0e4fa5d2e";
-//    private String header = "Bearer " + token;
     private String Iscd = "000921";
 
     private static final Logger logger = LogManager.getLogger(GiroController.class.getName());
 
-    @ResponseBody
-    @GetMapping("/getSewageFarePayment")
-    public void getSewageFarePayment(){ // 상하수도 납부금액 조회
-
-        String ApiNm = "InquireSewageFarePaymentHistory";
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd");
-        String Tsymd = simpleDateFormat.format(new Date());
-        String Trtm = "112428";
-        String FintechApsno = "001";
-        String ApiSvcCd = "13E_002_00";
-        int Min = 1111;
-        int Max = 9999;
-        String IsTuno = Integer.toString(Min + (int)(Math.random() * ((Max - Min))));
-
-        String ElecPayNo = "2632001709000428753";
-        String PageNo = "1";
-        String Insymd = "20191108";
-        String Ineymd = "20191108";
-
-        String apiURL = "https://developers.nonghyup.com/InquireSewageFarePaymentHistory.nh";
-
+    public String goConnection(String apiURL, String parameters){
         try {
+            System.out.println(apiURL);
             URL url = new URL(apiURL);
             HttpURLConnection con = (HttpURLConnection)url.openConnection();
             con.setRequestMethod("POST");
             con.setRequestProperty("Accept", "application/json");
-            con.setRequestProperty("Content-Type", "application/json charset=utf-8");
+            con.setRequestProperty("Content-Type", "application/json; charset=utf-8");
             con.setDoOutput(true);
-//            String parameters = "{'Authorization': token, 'Iscd': Iscd , 'ApiNm': ApiNm, " +
-//                    "'Tsymd': Tsymd , 'Trtm': Trtm, 'FintechApsno': FintechApsno , 'ApiSvcCd': ApiSvcCd, " +
-//                    "'IsTuno': IsTuno , 'ElecPayNo': ElecPayNo, 'PageNo': PageNo, 'Insymd': Insymd, 'Ineymd': Ineymd }";
-
-//            String parameters = "AccessToken="+token+"&Iscd="+Iscd+"&ApiNm="+ApiNm+"&Tsymd="+Tsymd+
-//                    "&Trtm="+Trtm+"&FintechApsno="+FintechApsno+"&ApiSvcCd="+ApiSvcCd+"&IsTuno="+ IsTuno+
-//                    "&ElecPayNo="+ElecPayNo+"&PageNo="+PageNo+"&Insymd="+Insymd+"&Ineymd="+Ineymd;
-
-//            String parameters = "ElecPayNo="+ElecPayNo+"&PageNo="+PageNo+"&Insymd="+Insymd+"&Ineymd="+Ineymd;
-            String parameters = "{'ElecPayNo': ElecPayNo, 'PageNo': PageNo, 'Insymd': Insymd, 'Ineymd': Ineymd }";
-
-
-            con.setRequestProperty("AccessToken", token);
-            con.setRequestProperty("Iscd", Iscd);
-            con.setRequestProperty("ApiNm", ApiNm);
-            con.setRequestProperty("Tsymd", Tsymd);
-            con.setRequestProperty("Trtm", Trtm);
-            con.setRequestProperty("FintechApsno", FintechApsno);
-            con.setRequestProperty("ApiSvcCd", ApiSvcCd);
-            con.setRequestProperty("IsTuno", IsTuno);
-//            con.setRequestProperty("ElecPayNo", ElecPayNo);
-//            con.setRequestProperty("PageNo", PageNo);
-//            con.setRequestProperty("Insymd", Insymd);
-//            con.setRequestProperty("Ineymd", Ineymd);
 
             DataOutputStream wr = new DataOutputStream(con.getOutputStream());
             wr.writeBytes(parameters);
@@ -99,13 +57,60 @@ public class GiroController { // 일단 코드 작성하던 도중 보류
             }
             br.close();
             System.out.println(response.toString());
+            return response.toString();
         } catch (Exception e) {
             System.out.println(e);
+            return String.valueOf(e);
+        }
+    }
+
+
+    @ResponseBody
+    @GetMapping("/getSewageFarePayment")
+    public JSONObject getSewageFarePayment() throws ParseException { // 상하수도 납부금액 조회
+
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd");
+        String Tsymd = simpleDateFormat.format(new Date());
+        int Min = 1111;
+        int Max = 9999;
+        String IsTuno = Integer.toString(Min + (int)(Math.random() * ((Max - Min))));
+
+        String apiURL = "https://developers.nonghyup.com/InquireSewageFarePaymentHistory.nh";
+
+        String parameters = "{\n" +
+                "  \"Header\": {\n" +
+                "    \"ApiNm\": \"InquireSewageFarePaymentHistory\",\n" +
+                "    \"Tsymd\": \""+Tsymd+"\",\n" +
+                "    \"Trtm\": \"112428\",\n" +
+                "    \"Iscd\": \""+Iscd+"\",\n" +
+                "    \"FintechApsno\": \"001\",\n" +
+                "    \"ApiSvcCd\": \"13E_002_00\",\n" +
+                "    \"IsTuno\": \""+IsTuno+"\",\n" +
+                "    \"AccessToken\": \""+token+"\"\n" +
+                "  },\n" +
+                "  \"ElecPayNo\": \"2632001709000428753\",\n" +
+                "  \"PageNo\": \"1\",\n" +
+                "  \"Insymd\": \"20191108\",\n" +
+                "  \"Ineymd\": \"20191108\"\n" +
+                "}";
+
+        String response = goConnection(apiURL,parameters);
+
+        JSONParser jsonPar = new JSONParser();
+        JSONObject jsonObj = (JSONObject) jsonPar.parse(response);
+        JSONArray jsonArray  = (JSONArray)jsonObj.get("Rec");
+        System.out.println(jsonArray);
+        int sumOfSewageFarePayment = 0;
+        for(Object ob : jsonArray) {
+            JSONObject tempObj = (JSONObject) ob;
+            sumOfSewageFarePayment += Integer.parseInt((String) tempObj.get("PmntAmt"));
         }
 
+        JSONObject SewageFarePayment = new JSONObject();
+        SewageFarePayment.put("kindOfUtilitybill","상하수도요금");
+        SewageFarePayment.put("PmnAmt",String.format("%,d", sumOfSewageFarePayment));
 
-
-
+        return SewageFarePayment;
     }
 
 

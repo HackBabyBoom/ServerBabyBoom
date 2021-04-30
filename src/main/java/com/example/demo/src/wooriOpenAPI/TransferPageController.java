@@ -74,7 +74,6 @@ public class TransferPageController {
                 "    \"UTZ_MCHR_OS_VER_NM\": \"\",\n" +
                 "    \"UTZ_MCHR_MDL_NM\": \"\",\n" +
                 "    \"UTZ_MCHR_APP_VER_NM\": \"\",\n" +
-//                "    \"PARTNER_CODE\": \"8MOPN001\"\n" +
                 "  },\n" +
                 "  \"dataBody\": {\n" +
                 "    \"WDR_ACNO\": \"1002123456789\",\n" +
@@ -103,13 +102,13 @@ public class TransferPageController {
     public void doAccountTransferTest() throws ParseException { // 당행 계좌이체
 
         try {
-
             URL url = new URL("https://openapi.wooribank.com:444/oai/wb/v1/trans/executeWooriAcctToWooriAcct");
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
-            System.out.println(userDao.getAppKey());
-            conn.setRequestProperty("appkey", userDao.getAppKey());
-            conn.setRequestProperty("token", "53Sol4YO1x6SBvDjdSueKEqqjUzBMo4E");
+            conn.setRequestProperty("appKey", userDao.getAppKey());
+            conn.setRequestProperty("Accept", "application/json");
+            conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+            conn.setDoOutput(true);
 
             String parameters = "{\n" +
                     "  \"dataHeader\": {\n" +
@@ -127,11 +126,10 @@ public class TransferPageController {
                     "    \"TRN_AM\": \"500000\",\n" +
                     "    \"RCV_BKCD\": \"020\",\n" +
                     "    \"RCV_ACNO\": \"1002987654321\",\n" +
-                    "    \"PTN_PBOK_PRNG_TXT\": \"보너스\"\n" +
+                    "    \"PTN_PBOK_PRNG_TXT\": \"남우리\"\n" +
                     "  }\n" +
                     "}";
 
-            conn.setDoOutput(true);
             DataOutputStream wr = new DataOutputStream(conn.getOutputStream());
             wr.writeBytes(parameters);
             wr.flush();
