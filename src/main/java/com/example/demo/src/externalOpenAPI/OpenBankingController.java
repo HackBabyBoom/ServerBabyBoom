@@ -440,6 +440,7 @@ public class OpenBankingController { // 가계부 기능 - 모든은행의 계�
     public String getRankList() throws ParseException, IOException {
 
         String apiURL = "http://localhost:5000/getRank";
+
         String response = goConnection(apiURL);
         return response;
 
