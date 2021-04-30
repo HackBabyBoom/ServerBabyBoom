@@ -21,7 +21,7 @@ import org.json.simple.*;
 
 @RestController
 @RequestMapping("/giro")
-public class GiroController { // 농협 API 이용
+public class GiroController { // 농협 API 이용하는 공과금 관련 Class
 
     private String token = "5ee315ef5aa3ed99a602af7c52eeaf27be8e45dcc77fce8e54365ec0e4fa5d2e";
     private String Iscd = "000921";
@@ -107,7 +107,7 @@ public class GiroController { // 농협 API 이용
         }
 
         JSONObject SewageFarePayment = new JSONObject();
-        SewageFarePayment.put("kindOfUtilitybill","상하수도요금");
+        SewageFarePayment.put("kindOfUtilitybill","상하수도세");
         SewageFarePayment.put("PmnAmt",String.format("%,d", sumOfSewageFarePayment));
 
         return SewageFarePayment;
@@ -153,11 +153,13 @@ public class GiroController { // 농협 API 이용
         int ElectricityFarePayment = Integer.parseInt((String) ((JSONObject)jsonArray.get(0)).get("PmntAmt "));
 
         JSONObject ElectricityFare = new JSONObject();
-        ElectricityFare.put("kindOfUtilitybill","전기요금");
+        ElectricityFare.put("kindOfUtilitybill","전기세");
         ElectricityFare.put("PmnAmt",String.format("%,d", ElectricityFarePayment));
 
         return ElectricityFare;
     }
+
+
 
 
 }

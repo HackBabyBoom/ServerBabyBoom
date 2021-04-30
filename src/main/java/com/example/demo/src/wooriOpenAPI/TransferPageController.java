@@ -18,7 +18,7 @@ import java.net.URL;
 
 @RestController
 @RequestMapping("/transfer")
-public class TransferPageController {
+public class TransferPageController { // 이체 관련 Class - 보류
 
     UserDao userDao = new UserDao();
 
