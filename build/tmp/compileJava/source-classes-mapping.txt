@@ -10,8 +10,8 @@ com/example/demo/src/test/TestController.java
  com.example.demo.src.test.TestController
 com/example/demo/config/secret/Secret.java
  com.example.demo.config.secret.Secret
-com/example/demo/src/user/UserProvider.java
- com.example.demo.src.user.UserProvider
+com/example/demo/utils/JwtService.java
+ com.example.demo.utils.JwtService
 com/example/demo/src/user/model/PostUserRes.java
  com.example.demo.src.user.model.PostUserRes
 com/example/demo/src/user/UserController.java
@@ -20,6 +20,8 @@ com/example/demo/utils/ValidationRegex.java
  com.example.demo.utils.ValidationRegex
 com/example/demo/config/BaseResponse.java
  com.example.demo.config.BaseResponse
+com/example/demo/src/user/UserProvider.java
+ com.example.demo.src.user.UserProvider
 com/example/demo/src/user/UserDao.java
  com.example.demo.src.user.UserDao
 com/example/demo/src/user/UserService.java
@@ -38,11 +40,9 @@ com/example/demo/DemoApplication.java
  com.example.demo.DemoApplication
 com/example/demo/src/WebSecurityConfig.java
  com.example.demo.src.WebSecurityConfig
-com/example/demo/utils/JwtService.java
- com.example.demo.utils.JwtService
-com/example/demo/src/wooriOpenAPI/MainPageController.java
- com.example.demo.src.wooriOpenAPI.MainPageController
-com/example/demo/src/externalOpenAPI/OpenBankingController.java
- com.example.demo.src.externalOpenAPI.OpenBankingController
 com/example/demo/src/wooriOpenAPI/TransactionPageController.java
  com.example.demo.src.wooriOpenAPI.TransactionPageController
+com/example/demo/src/externalOpenAPI/OpenBankingController.java
+ com.example.demo.src.externalOpenAPI.OpenBankingController
+com/example/demo/src/wooriOpenAPI/MainPageController.java
+ com.example.demo.src.wooriOpenAPI.MainPageController

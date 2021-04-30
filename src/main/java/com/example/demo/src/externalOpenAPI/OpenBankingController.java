@@ -3,12 +3,14 @@ package com.example.demo.src.externalOpenAPI;
 //import org.apache.tomcat.util.json.JSONParser;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
 import org.json.simple.parser.ParseException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -435,19 +437,12 @@ public class OpenBankingController { // 가계부 기능 - 모든은행의 계�
 
     @ResponseBody
     @GetMapping("/getRankList") // flask에서 매장 랭크를 받아옴
-    public JSONObject getRankList() throws  ParseException{
+    public String getRankList() throws ParseException, IOException {
 
-        JSONObject getRankList  = getRankList();
+        String apiURL = "http://localhost:5000/getRank";
+        String response = goConnection(apiURL);
+        return response;
 
-        String apiURL = "http://localhost:5000/getRank"; //flask 서버
-        String result = goConnection(apiURL);
-        logger.info(result);
-
-        JSONParser jsonPar = new JSONParser();
-        JSONObject jsonObj = (JSONObject) jsonPar.parse(result);
-        JSONObject RankList = (JSONObject) jsonPar.parse("tran_amt");
-
-        return RankList;
 
     }
 
