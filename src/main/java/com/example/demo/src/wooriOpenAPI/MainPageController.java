@@ -1,5 +1,6 @@
 package com.example.demo.src.wooriOpenAPI;
 
+import com.example.demo.src.externalOpenAPI.OpenBankingController;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -21,6 +22,7 @@ import java.text.DecimalFormat;
 public class MainPageController { // 앱의 메인화면에서 사용되는 Controller
 
     UserDao userDao = new UserDao();
+    OpenBankingController openBankingController = new OpenBankingController();
 
     public String goConnection(String apiURL, String parameters){
         try {
@@ -59,6 +61,19 @@ public class MainPageController { // 앱의 메인화면에서 사용되는 Cont
         }
     }
 
+    @ResponseBody
+    @GetMapping("")
+    public JSONObject main() throws ParseException {
+
+        JSONArray allWooriAccountInfo = getAllWooriAccountInfo();
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("accounts",allWooriAccountInfo);
+        String sumOfAllAccountWithdrawal = openBankingController.getSumOfAllAccountWithdrawal();
+        jsonObject.put("month_total_transaction",sumOfAllAccountWithdrawal);
+
+        return jsonObject;
+    }
+
 
     @ResponseBody
     @GetMapping("/getAllWooriAccountInfo")
@@ -94,10 +109,12 @@ public class MainPageController { // 앱의 메인화면에서 사용되는 Cont
             ((JSONObject)accountArray.get(index)).remove("KRW");
             ((JSONObject)accountArray.get(index)).remove("XPR_DT");
             ((JSONObject)accountArray.get(index)).remove("PSKL_ACT_YN");
+            String balance = (String) ((JSONObject)accountArray.get(index)).get("PBOK_BAL");
+            balance = balance.split("\\.")[0];
+            balance = String.format("%,d", Integer.parseInt(balance));
+            ((JSONObject)accountArray.get(index)).replace("PBOK_BAL",balance);
         }
-
         return accountArray;
-
     }
 
 
