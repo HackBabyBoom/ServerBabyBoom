@@ -103,14 +103,13 @@ public class TransferPageController {
 
             URL url = new URL("https://openapi.wooribank.com:444/oai/wb/v1/trans/executeWooriAcctToWooriAcct");
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("POST");
             System.out.println(userDao.getAppKey());
+            conn.setRequestMethod("POST");
             conn.setRequestProperty("appKey", userDao.getAppKey());
-            conn.setRequestProperty("Accept", "application/json");
+//            conn.setRequestProperty("Accept", "application/json");
             conn.setRequestProperty("Content-Type", "application/json charset=utf-8");
+//            conn.setRequestProperty("Authorization", "Bearer " + "53Sol4YO1x6SBvDjdSueKEqqjUzBMo4E");
             conn.setDoOutput(true);
-
-//            conn.setRequestProperty("token", "53Sol4YO1x6SBvDjdSueKEqqjUzBMo4E");
 
             String parameters = "{\n" +
                     "  \"dataHeader\": {\n" +
@@ -125,9 +124,9 @@ public class TransferPageController {
                     "  },\n" +
                     "  \"dataBody\": {\n" +
                     "    \"WDR_ACNO\": \"1002123456789\",\n" +
-                    "    \"TRN_AM\": \"500000\",\n" +
+                    "    \"TRN_AM\": \"300000\",\n" +
                     "    \"RCV_BKCD\": \"020\",\n" +
-                    "    \"RCV_ACNO\": \"1002987654321\",\n" +
+                    "    \"RCV_ACNO\": \"1002987654333\",\n" +
                     "    \"PTN_PBOK_PRNG_TXT\": \"보너스\"\n" +
                     "  }\n" +
                     "}";
