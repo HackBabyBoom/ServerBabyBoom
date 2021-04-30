@@ -26,7 +26,7 @@ import org.apache.logging.log4j.Logger;
 
 @RestController
 @RequestMapping("/open")
-public class OpenBankingController { // 가계부 기능 - 모든은행의 계좌조회 관련 Class ( 금융결제원 Open API 사용 )
+public class OpenBankingController { // 금융결제원 Open API 이용하는 모든은행의 계좌조회 및 오픈뱅킹 관련 Class
 
     private String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiIxMTAwNzcyMDgyIiwic2NvcGUiOlsiaW5xdWlyeSIsImxvZ2luIiwidHJhbnNmZXIiXSwiaXNzIjoiaHR0cHM6Ly93d3cub3BlbmJhbmtpbmcub3Iua3IiLCJleHAiOjE2MjcwNTUxODUsImp0aSI6IjkyZWU3NzZjLTIyMDUtNGIxMS1hNTJkLTJiY2Y3MmVjOTY3OSJ9.8vBKGflc8RtuqSAEIaP2DynZG4RabYYywGHVedGxfqg";
     private String header = "Bearer " + token;

@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/transaction")
-public class TransactionPageController {
+public class TransactionPageController { // 앱의 전체 계좌 거래내역 분석 화면에서 사용되는 Class
 
     OpenBankingController openBankingController = new OpenBankingController();
     MainPageController mainPageController = new MainPageController();
