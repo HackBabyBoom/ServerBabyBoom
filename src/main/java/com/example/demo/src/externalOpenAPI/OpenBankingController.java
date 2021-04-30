@@ -128,39 +128,6 @@ public class OpenBankingController { // 가계부 기능 - 모든은행의 계�
     }
 
 
-//    @ResponseBody
-//    @GetMapping("/getAllAccountWithdrawalAndPercent")  // 각 오픈뱅킹 계좌 별 총 출금액 & 퍼센트
-//    public JSONArray getAllAccountWithdrawalAndPercent() throws ParseException {
-//        JSONArray[] allAccountTransactionLists = getAllAccountTransactionList();
-//        String [] cardName = {"하나체크카드", "신한체크카드", "IBK기업체크카드","우리체크카드"};
-//        JSONArray allAccountWithdrawal = new JSONArray();
-//        int [] allAcountWithdrawlList = new int [allAccountTransactionLists.length];
-//        String sumOfAllAccountWithdrawal= getSumOfAllAccountWithdrawal().replace(",","");
-//
-//        for(int accountIndex=0; accountIndex< allAccountTransactionLists.length; accountIndex++){
-//            JSONObject jsonObject = new JSONObject();
-//            JSONObject cardObject = new JSONObject();
-//            cardObject.put("card_name",cardName[accountIndex]);
-//            for(Object ob : allAccountTransactionLists[accountIndex]){
-//                JSONObject jsonOb = (JSONObject)ob;
-//                if(jsonOb.get("inout_type").equals("출금")){
-//                    allAcountWithdrawlList[accountIndex] += Integer.parseInt(String.valueOf(jsonOb.get("tran_amt")));
-//                }
-//            }
-//            cardObject.put("card_cunsumption",String.format("%,d", allAcountWithdrawlList[accountIndex] ));
-//            double percent = ( (double) allAcountWithdrawlList[accountIndex] / ((double)Integer.parseInt(sumOfAllAccountWithdrawal)) * 100.0);
-//            percent = Double.parseDouble(String.format("%.2f",percent));
-//            jsonObject.put("percent",percent);
-//            jsonObject.put("card",cardObject);
-//            allAccountWithdrawal.add(jsonObject);
-//        }
-//
-//        // 하나, 신한, 기업, 우리
-//        System.out.println(allAcountWithdrawlList[0] + " " + allAcountWithdrawlList[1] + " " + allAcountWithdrawlList[2] + " " + allAcountWithdrawlList[3]);
-//        return allAccountWithdrawal;
-//    }
-
-
     @ResponseBody
     @GetMapping("/getAllAccountWithdrawalAndPercent")  // 각 오픈뱅킹 계좌 별 총 출금액 & 퍼센트
     public JSONArray getAllAccountWithdrawalAndPercent() throws ParseException {
@@ -175,8 +142,8 @@ public class OpenBankingController { // 가계부 기능 - 모든은행의 계�
             JSONObject cardObject = new JSONObject();
             cardObject.put("card_name",cardName[accountIndex]);
             cardObject.put("card_cunsumption",String.format("%,d", allAcountWithdrawallList[accountIndex] ));
-            double percent = ( (double) allAcountWithdrawallList[accountIndex] / ((double)Integer.parseInt(sumOfAllAccountWithdrawal)) * 100.0);
-            percent = Double.parseDouble(String.format("%.2f",percent));
+            int percent = (int)( (double) allAcountWithdrawallList[accountIndex] / ((double)Integer.parseInt(sumOfAllAccountWithdrawal)) * 100.0);
+
             jsonObject.put("percent",percent);
             jsonObject.put("card",cardObject);
             allAccountWithdrawal.add(jsonObject);
