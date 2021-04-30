@@ -114,4 +114,50 @@ public class GiroController { // 농협 API 이용
     }
 
 
+    @ResponseBody
+    @GetMapping("/getElectricityFarePayment")
+    public JSONObject getElectricityFarePayment() throws ParseException { // 전기요금 납부금액 조회
+
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd");
+        String Tsymd = simpleDateFormat.format(new Date());
+        int Min = 1111;
+        int Max = 9999;
+        String IsTuno = Integer.toString(Min + (int)(Math.random() * ((Max - Min))));
+
+        String apiURL = "https://developers.nonghyup.com/InquireElectricityFarePaymentHistory.nh";
+
+        String parameters = "{\n" +
+                "  \"Header\": {\n" +
+                "    \"ApiNm\": \"InquireElectricityFarePaymentHistory\",\n" +
+                "    \"Tsymd\": \""+Tsymd+"\",\n" +
+                "    \"Trtm\": \"112428\",\n" +
+                "    \"Iscd\": \""+Iscd+"\",\n" +
+                "    \"FintechApsno\": \"001\",\n" +
+                "    \"ApiSvcCd\": \"13E_001_00\",\n" +
+                "    \"IsTuno\": \""+IsTuno+"\",\n" +
+                "    \"AccessToken\": \""+token+"\"\n" +
+                "  },\n" +
+                "  \"ElecPayNo\": \"0606628088\",\n" +
+                "  \"PageNo\": \"1\",\n" +
+                "  \"Insymd\": \"20191010\",\n" +
+                "  \"Ineymd\": \"20191010\"\n" +
+                "}";
+
+        String response = goConnection(apiURL,parameters);
+
+        JSONParser jsonPar = new JSONParser();
+        JSONObject jsonObj = (JSONObject) jsonPar.parse(response);
+        JSONArray jsonArray  = (JSONArray)jsonObj.get("Rec");
+        System.out.println(jsonArray);
+
+        int ElectricityFarePayment = Integer.parseInt((String) ((JSONObject)jsonArray.get(0)).get("PmntAmt "));
+
+        JSONObject ElectricityFare = new JSONObject();
+        ElectricityFare.put("kindOfUtilitybill","전기요금");
+        ElectricityFare.put("PmnAmt",String.format("%,d", ElectricityFarePayment));
+
+        return ElectricityFare;
+    }
+
+
 }

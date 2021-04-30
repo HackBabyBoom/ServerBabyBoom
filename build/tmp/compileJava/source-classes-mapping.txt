@@ -42,7 +42,7 @@ com/example/demo/src/wooriOpenAPI/TransactionPageController.java
  com.example.demo.src.wooriOpenAPI.TransactionPageController
 com/example/demo/src/externalOpenAPI/OpenBankingController.java
  com.example.demo.src.externalOpenAPI.OpenBankingController
-com/example/demo/src/externalOpenAPI/GiroController.java
- com.example.demo.src.externalOpenAPI.GiroController
 com/example/demo/src/wooriOpenAPI/MainPageController.java
  com.example.demo.src.wooriOpenAPI.MainPageController
+com/example/demo/src/externalOpenAPI/GiroController.java
+ com.example.demo.src.externalOpenAPI.GiroController
