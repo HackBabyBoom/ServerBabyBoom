@@ -109,7 +109,7 @@ public class OpenBankingController { // 금융결제원 Open API 이용하는 �
 
 
     @ResponseBody
-    @GetMapping("/getAllAccountWithdrawal")  // 각 오픈뱅킹 계좌 별 총 출금액 & 퍼센트
+    @GetMapping("/getAllAccountWithdrawal")  // 각 오픈뱅킹 계좌 별 총 출금액
     public int [] getAllAccountWithdrawal() throws ParseException {
         JSONArray[] allAccountTransactionLists = getAllAccountTransactionList();
         int [] allAcountWithdrawlList = new int [allAccountTransactionLists.length];
@@ -154,14 +154,14 @@ public class OpenBankingController { // 금융결제원 Open API 이용하는 �
     }
 
 
-
     @ResponseBody
     @GetMapping("/getWooriWithdrawal")
-    public String getWooriWithdrawal() throws ParseException {
+    public String getWooriWithdrawal() throws ParseException { // 우리은행 계좌 출금액
         int [] allAcountWithdrawlList = getAllAccountWithdrawal();
         String WooriWithdrawal = String.format("%,d", allAcountWithdrawlList[3]);
         return WooriWithdrawal;
     }
+
 
     @ResponseBody
     @GetMapping("/getSumOfAllAccountWithdrawal") // 전체 오픈뱅킹 출금액
@@ -201,8 +201,8 @@ public class OpenBankingController { // 금융결제원 Open API 이용하는 �
         int Min = 111111111;
         int Max = 999999999;
 
-        String from_date = "20210401"; // 사용자가 UI를 통해 입력한 변수를 넣을 예정
-        String to_date = "20210426"; // 일단은 TEST를 위해 넣어둠
+        String from_date = "20210401"; // default 4월
+        String to_date = "20210430";
 
         String [] befor_inquiry_trace_info = {"333","222","123","111"};
 
@@ -228,7 +228,6 @@ public class OpenBankingController { // 금융결제원 Open API 이용하는 �
 
             JSONParser jsonPar = new JSONParser();
             JSONObject jsonObj = (JSONObject) jsonPar.parse(result);
-
             JSONArray resListArray = (JSONArray)jsonObj.get("res_list");
             JSONArray accountTransactionList = new JSONArray(); // 데이터 분석 시 파이썬으로 넘겨줄 JSONArray
 
@@ -250,11 +249,7 @@ public class OpenBankingController { // 금융결제원 Open API 이용하는 �
             allAccountTransactionLists[index] = accountTransactionList;
         }
 
-        for(JSONArray jsonObject : allAccountTransactionLists){
-            System.out.println(jsonObject);
-        }
         return allAccountTransactionLists;
-
     }
 
 
@@ -292,7 +287,6 @@ public class OpenBankingController { // 금융결제원 Open API 이용하는 �
         return depositList;
     }
 
-//    연경이가짠거
 
     @ResponseBody
     @GetMapping("/getWithdrawalList")  // 날짜 별 총 출금액 배열
@@ -428,6 +422,7 @@ public class OpenBankingController { // 금융결제원 Open API 이용하는 �
         return depositAndWithdrawalListByDay;
     }
 
+
     // 날짜 역순으로 ( default 20210430 부터 역순으로 3일동안 ) 입출금 총액, 입출금내역&은행명칭
     @ResponseBody
     @GetMapping("/getTotalPaymentAndListByDay")
@@ -474,7 +469,6 @@ public class OpenBankingController { // 금융결제원 Open API 이용하는 �
     public JSONArray getRankList() throws ParseException, IOException {
 
         String apiURL = "http://localhost:5000/getRank";
-
         String response = goConnection(apiURL);
         String [] responseArr = response.replace("{","").replace("}","").split(",");
 
@@ -491,8 +485,5 @@ public class OpenBankingController { // 금융결제원 Open API 이용하는 �
 
         return rankList;
     }
-
-
-
 
 }
