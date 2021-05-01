@@ -23,6 +23,7 @@ public class MainPageController { // 앱의 메인화면에서 사용되는 Cont
 
     UserDao userDao = new UserDao();
     OpenBankingController openBankingController = new OpenBankingController();
+    UtilitybillPageController utilitybillPageController = new UtilitybillPageController();
 
     public String goConnection(String apiURL, String parameters){
         try {
@@ -70,6 +71,8 @@ public class MainPageController { // 앱의 메인화면에서 사용되는 Cont
         jsonObject.put("accounts",allWooriAccountInfo);
         String sumOfAllAccountWithdrawal = openBankingController.getSumOfAllAccountWithdrawal();
         jsonObject.put("month_total_transaction",sumOfAllAccountWithdrawal);
+        String sumOfUtilitybill = utilitybillPageController.getSumOfAllUtilitybill();
+        jsonObject.put("sumOfUtilitybill",sumOfUtilitybill);
 
         return jsonObject;
     }
