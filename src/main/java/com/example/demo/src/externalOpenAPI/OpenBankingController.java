@@ -162,7 +162,7 @@ public class OpenBankingController { // 금융결제원 Open API 이용하는 �
         return WooriWithdrawal;
     }
 
-        @ResponseBody
+    @ResponseBody
     @GetMapping("/getSumOfAllAccountWithdrawal") // 전체 오픈뱅킹 출금액
     public String getSumOfAllAccountWithdrawal() throws ParseException {
         int [] allAcountWithdrawallList = getAllAccountWithdrawal();
@@ -447,7 +447,7 @@ public class OpenBankingController { // 금융결제원 Open API 이용하는 �
     @GetMapping("/getRankList") // flask에서 매장 랭크를 받아옴
     public JSONObject getRankList() throws  ParseException{
 
-        JSONObject getRankList  = getRankList();
+        JSONObject getRankList  = new JSONObject();
 
         String apiURL = "http://localhost:5000/getRank"; //flask 서버
         String result = goConnection(apiURL);
@@ -460,5 +460,8 @@ public class OpenBankingController { // 금융결제원 Open API 이용하는 �
         return RankList;
 
     }
+
+
+
 
 }

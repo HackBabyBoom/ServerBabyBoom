@@ -1,5 +1,6 @@
 package com.example.demo.src.wooriOpenAPI;
 
+import com.example.demo.src.externalOpenAPI.GiroController;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -14,12 +15,17 @@ import java.io.DataOutputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 @RestController
-@RequestMapping("/Utilitybill")
+@RequestMapping("/utilitybill")
 public class UtilitybillPageController { // 앱의 공과금 화면에서 사용되는 Class
 
     UserDao userDao = new UserDao();
+    GiroController giroController = new GiroController();
 
     public String goConnection(String apiURL, String parameters){
         try {
@@ -60,6 +66,32 @@ public class UtilitybillPageController { // 앱의 공과금 화면에서 사용
 
 
     @ResponseBody
+    @GetMapping("")
+    public JSONObject utilitybill() throws ParseException {
+
+        JSONObject allUtilitybillInfo = new JSONObject();
+
+        // 공과금 총액
+        String sumOfUtilitybill = getSumOfAllUtilitybill();
+        allUtilitybillInfo.put("sumOfUtilitybill",sumOfUtilitybill);
+
+        // 각 종류별 공과금
+        JSONObject SewageFarePayment =giroController.getSewageFarePayment();
+        JSONObject ElectricityFarePayment = giroController.getElectricityFarePayment();
+        JSONArray wooriUtilitybillList = getWooriUtilitybillList();
+        wooriUtilitybillList.add(SewageFarePayment);
+        wooriUtilitybillList.add(ElectricityFarePayment);
+        allUtilitybillInfo.put("UtilitybillList",wooriUtilitybillList);
+
+        // 각 종류별 공과금 순위
+        JSONArray rankOfUtilitybill = sortJsonArray(wooriUtilitybillList);
+        allUtilitybillInfo.put("rankOfUtilitybill",rankOfUtilitybill);
+
+        return allUtilitybillInfo;
+    }
+
+
+    @ResponseBody
     @GetMapping("/getWooriUtilitybillList")
     public JSONArray getWooriUtilitybillList() throws ParseException { // 우리은행 공과금 리스트
 
@@ -87,11 +119,13 @@ public class UtilitybillPageController { // 앱의 공과금 화면에서 사용
         JSONArray jsonArray = (JSONArray)((JSONObject)jsonObj.get("dataBody")).get("REPT_FA");
         JSONArray utilitybillList = new JSONArray();
 
+        System.out.println(response);
+
         for(Object ob : jsonArray) {
             JSONObject tempObj = (JSONObject) ob;
             JSONObject paymentObject = new JSONObject();
             paymentObject.put("kindOfUtilitybill",tempObj.get("ITTX_NM"));
-            int payment = Integer.parseInt((String) tempObj.get("PYM_AM"));
+            int payment = Integer.parseInt(String.valueOf(tempObj.get("PYM_AM")));
             paymentObject.put("PmnAmt",String.format("%,d", payment));
             utilitybillList.add(paymentObject);
         }
@@ -100,7 +134,60 @@ public class UtilitybillPageController { // 앱의 공과금 화면에서 사용
 
     }
 
-    // 전체 총 공과금 return
+
+    @ResponseBody
+    @GetMapping("/getSumOfAllUtilitybill") // 전체 공과금 총액
+    public String getSumOfAllUtilitybill() throws ParseException {
+
+        int sumOfUtilitybill = 0;
+
+        JSONObject SewageFarePayment =giroController.getSewageFarePayment();
+        sumOfUtilitybill += Integer.parseInt(((String)SewageFarePayment.get("PmnAmt")).replace(",",""));
+        JSONObject ElectricityFarePayment = giroController.getElectricityFarePayment();
+        sumOfUtilitybill += Integer.parseInt(((String)ElectricityFarePayment.get("PmnAmt")).replace(",",""));
+
+        JSONArray wooriUtilitybillList = getWooriUtilitybillList();
+        for(Object ob : wooriUtilitybillList) {
+            JSONObject tempObj = (JSONObject) ob;
+            sumOfUtilitybill += Integer.parseInt(((String) tempObj.get("PmnAmt")).replace(",",""));
+        }
+
+        String sumOfUtilitybillPayment = String.format("%,d", sumOfUtilitybill);
+
+        return sumOfUtilitybillPayment;
+
+    }
+
+
+    public JSONArray sortJsonArray(JSONArray array) {
+        List<JSONObject> jsons = new ArrayList<JSONObject>();
+
+        for (int i = 0; i < array.size(); i++) {
+            jsons.add((JSONObject)array.get(i));
+        }
+
+        Collections.sort(jsons, new Comparator<JSONObject>() {
+            @Override
+            public int compare(JSONObject lhs, JSONObject rhs) {
+                int lid = Integer.parseInt(((String) lhs.get("PmnAmt")).replace(",",""));;
+                int rid = Integer.parseInt(((String) rhs.get("PmnAmt")).replace(",",""));;
+
+                if(lid < rid)
+                    return -1;
+                else if(lid > rid)
+                    return 1;
+                else
+                    return 0;
+                // Here you could parse string id to integer and then compare.
+            }
+        });
+
+        System.out.println(jsons);
+        JSONArray json_array = new JSONArray();
+        json_array.addAll(jsons);
+
+        return json_array;
+    }
 
 
 }
