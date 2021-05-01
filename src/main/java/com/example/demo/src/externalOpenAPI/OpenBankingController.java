@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -427,14 +428,16 @@ public class OpenBankingController { // 금융결제원 Open API 이용하는 �
         return depositAndWithdrawalListByDay;
     }
 
-    // 날짜 역순으로 ( default 20210430 부터 역순으로 ) 입출금 총액, 입출금내역&은행명칭
+    // 날짜 역순으로 ( default 20210430 부터 역순으로 3일동안 ) 입출금 총액, 입출금내역&은행명칭
     @ResponseBody
     @GetMapping("/getTotalPaymentAndListByDay")
     public JSONArray getTotalPaymentAndListByDay() throws ParseException { // default 는 4월
 
         JSONArray totalPaymentAndListByDay = new JSONArray();
         JSONArray totalPaymentByDay = getList(); // 날짜 별 총액
-        for (int index=totalPaymentByDay.size()-1; index>=0; index--){
+        int size = totalPaymentByDay.size();
+
+        for (int index=size-1; index>(size-4); index--){
             JSONObject jsonOb = (JSONObject) totalPaymentByDay.get(index);
             JSONObject paymentInfo = new JSONObject();
             JSONArray jsonArray = getDepositAndWithdrawalListByDay(String.valueOf(jsonOb.get("tran_date")));
@@ -466,24 +469,27 @@ public class OpenBankingController { // 금융결제원 Open API 이용하는 �
     }
 
 
-
-
     @ResponseBody
     @GetMapping("/getRankList") // flask에서 매장 랭크를 받아옴
-    public JSONObject getRankList() throws  ParseException{
+    public JSONArray getRankList() throws ParseException, IOException {
 
-        JSONObject getRankList  = new JSONObject();
+        String apiURL = "http://localhost:5000/getRank";
 
-        String apiURL = "http://localhost:5000/getRank"; //flask 서버
-        String result = goConnection(apiURL);
-        logger.info(result);
+        String response = goConnection(apiURL);
+        String [] responseArr = response.replace("{","").replace("}","").split(",");
 
-        JSONParser jsonPar = new JSONParser();
-        JSONObject jsonObj = (JSONObject) jsonPar.parse(result);
-        JSONObject RankList = (JSONObject) jsonPar.parse("tran_amt");
+        JSONArray rankList = new JSONArray();
 
-        return RankList;
+        for(String str : responseArr){
+            JSONObject jsonObject = new JSONObject();
+            str = str.replace(" ","").replace("\"","");
+            jsonObject.put("print_content",str.split(":")[0]);
+            String payment = String.format("%,d",Integer.parseInt(String.valueOf(str.split(":")[1])));
+            jsonObject.put("tran_amt",payment);
+            rankList.add(jsonObject);
+        }
 
+        return rankList;
     }
 
 

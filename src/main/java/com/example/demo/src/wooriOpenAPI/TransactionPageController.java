@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
+
 @RestController
 @RequestMapping("/transaction")
 public class TransactionPageController { // 앱의 전체 계좌 거래내역 분석 화면에서 사용되는 Class
@@ -18,7 +20,7 @@ public class TransactionPageController { // 앱의 전체 계좌 거래내역 �
 
     @ResponseBody
     @GetMapping("")
-    public JSONObject transfer() throws ParseException {
+    public JSONObject transaction() throws ParseException, IOException {
 
         JSONObject jsonObject = new JSONObject();
         String sumOfAllAccountWithdrawal = openBankingController.getSumOfAllAccountWithdrawal();
@@ -27,6 +29,8 @@ public class TransactionPageController { // 앱의 전체 계좌 거래내역 �
         jsonObject.put("month_total_gain",sumOfAllAccountDeposit);
         JSONArray allAccountWithdrawalAndPercent = openBankingController.getAllAccountWithdrawalAndPercent();
         jsonObject.put("bank_consumptions",allAccountWithdrawalAndPercent);
+        JSONArray rankOfTransaction = openBankingController.getRankList();
+        jsonObject.put("rankOfTransaction",rankOfTransaction);
 
         return jsonObject;
     }
