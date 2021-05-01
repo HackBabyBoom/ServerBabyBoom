@@ -26,12 +26,6 @@ public class MoneyBookPageController {
         JSONArray totalPaymentAndListByDay = openBankingController.getTotalPaymentAndListByDay();
         jsonObject.put("totalPaymentList",totalPaymentAndListByDay);
 
-//        JSONArray depositAndWithdrawalListByDay = openBankingController.getDepositAndWithdrawalListByDay(date);
-//        jsonObject.put("depositAndWithdrawalListByDay",depositAndWithdrawalListByDay);
-
-//        int totalPayment = openBankingController.getTotalPaymentByDay(date);
-//        jsonObject.put("totalPayment",totalPayment);
-
         return jsonObject;
     }
 

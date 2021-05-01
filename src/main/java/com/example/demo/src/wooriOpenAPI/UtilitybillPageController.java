@@ -71,10 +71,6 @@ public class UtilitybillPageController { // 앱의 공과금 화면에서 사용
 
         JSONObject allUtilitybillInfo = new JSONObject();
 
-        // 공과금 총액
-        String sumOfUtilitybill = getSumOfAllUtilitybill();
-        allUtilitybillInfo.put("sumOfUtilitybill",sumOfUtilitybill);
-
         // 각 종류별 공과금
         JSONObject SewageFarePayment =giroController.getSewageFarePayment();
         JSONObject ElectricityFarePayment = giroController.getElectricityFarePayment();
@@ -82,6 +78,10 @@ public class UtilitybillPageController { // 앱의 공과금 화면에서 사용
         wooriUtilitybillList.add(SewageFarePayment);
         wooriUtilitybillList.add(ElectricityFarePayment);
         allUtilitybillInfo.put("UtilitybillList",wooriUtilitybillList);
+
+        // 공과금 총액
+        String sumOfUtilitybill = getSumOfAllUtilitybillPayment(wooriUtilitybillList);
+        allUtilitybillInfo.put("sumOfUtilitybill",sumOfUtilitybill);
 
         // 각 종류별 공과금 순위
         JSONArray rankOfUtilitybill = sortJsonArray(wooriUtilitybillList);
@@ -136,7 +136,25 @@ public class UtilitybillPageController { // 앱의 공과금 화면에서 사용
 
 
     @ResponseBody
-    @GetMapping("/getSumOfAllUtilitybill") // 전체 공과금 총액
+    @GetMapping("/getSumOfAllUtilitybillPayment") // 전체 공과금 총액
+    public String getSumOfAllUtilitybillPayment(JSONArray wooriUtilitybillList) throws ParseException {
+
+        int sumOfUtilitybill = 0;
+
+        for(Object ob : wooriUtilitybillList) {
+            JSONObject tempObj = (JSONObject) ob;
+            sumOfUtilitybill += Integer.parseInt(((String) tempObj.get("PmnAmt")).replace(",",""));
+        }
+
+        String sumOfUtilitybillPayment = String.format("%,d", sumOfUtilitybill);
+
+        return sumOfUtilitybillPayment;
+
+    }
+
+
+    @ResponseBody
+    @GetMapping("/getSumOfAllUtilitybill") // 전체 공과금 총액 - main에서 사용
     public String getSumOfAllUtilitybill() throws ParseException {
 
         int sumOfUtilitybill = 0;
@@ -159,7 +177,7 @@ public class UtilitybillPageController { // 앱의 공과금 화면에서 사용
     }
 
 
-    public JSONArray sortJsonArray(JSONArray array) {
+    public JSONArray sortJsonArray(JSONArray array) { // 공과금 순위 정렬
         List<JSONObject> jsons = new ArrayList<JSONObject>();
 
         for (int i = 0; i < array.size(); i++) {
