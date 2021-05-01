@@ -401,9 +401,10 @@ public class OpenBankingController { // 금융결제원 Open API 이용하는 �
 
 
     @ResponseBody
-    @GetMapping("/getDepositAndWithdrawalListByDay")  // 날짜 별 입출금 내역
+    @GetMapping("/getDepositAndWithdrawalListByDay")  // 날짜 별 입출금 내역 + 은행 이름까지 추가
     public JSONArray getDepositAndWithdrawalListByDay(String date) throws ParseException {
-        date = "20210430"; // 테스트용
+//        date = "20210430"; // 테스트용
+        String [] cardName = {"하나", "신한", "기업","우리"};
         JSONArray[] allAccountTransactionLists = getAllAccountTransactionList();
         JSONArray depositAndWithdrawalListByDay = new JSONArray();
 
@@ -415,8 +416,10 @@ public class OpenBankingController { // 금융결제원 Open API 이용하는 �
                         int payment = Integer.parseInt((String) jsonOb.get("tran_amt"))*(-1);
                         jsonOb.replace("tran_amt",payment);
                     }
+                    jsonOb.replace("tran_amt", String.format("%,d", Integer.parseInt(String.valueOf(jsonOb.get("tran_amt")))));
                     jsonOb.remove("inout_type");
                     jsonOb.remove("tran_date");
+                    jsonOb.put("bank_name",cardName[accountIndex]);
                     depositAndWithdrawalListByDay.add(jsonOb);
                 }
             }
@@ -424,20 +427,42 @@ public class OpenBankingController { // 금융결제원 Open API 이용하는 �
         return depositAndWithdrawalListByDay;
     }
 
+    // 날짜 역순으로 ( default 20210430 부터 역순으로 ) 입출금 총액, 입출금내역&은행명칭
+    @ResponseBody
+    @GetMapping("/getTotalPaymentAndListByDay")
+    public JSONArray getTotalPaymentAndListByDay() throws ParseException { // default 는 4월
+
+        JSONArray totalPaymentAndListByDay = new JSONArray();
+        JSONArray totalPaymentByDay = getList(); // 날짜 별 총액
+        for (int index=totalPaymentByDay.size()-1; index>=0; index--){
+            JSONObject jsonOb = (JSONObject) totalPaymentByDay.get(index);
+            JSONObject paymentInfo = new JSONObject();
+            JSONArray jsonArray = getDepositAndWithdrawalListByDay(String.valueOf(jsonOb.get("tran_date")));
+            paymentInfo.put("tran_date",jsonOb.get("tran_date"));
+            paymentInfo.put("total_comsumption",String.format("%,d", Integer.parseInt(String.valueOf(jsonOb.get("tran_amt")))));
+            paymentInfo.put("listOfPayment",jsonArray);
+            totalPaymentAndListByDay.add(paymentInfo);
+        }
+
+        return totalPaymentAndListByDay;
+    }
+
 
     @ResponseBody
     @GetMapping("/getTotalPaymentByDay")  // 날짜 별 총 입출금액
-    public int getTotalPaymentByDay(String date) throws ParseException {
+    public String getTotalPaymentByDay(String date) throws ParseException {
 //        date = "20210430"; // 테스트용
         JSONArray depositAndWithdrawalListByDay = getDepositAndWithdrawalListByDay(date);
         int totalPayment = 0;
 
         for(Object ob : depositAndWithdrawalListByDay){
             JSONObject jsonOb = (JSONObject)ob;
-            totalPayment += Integer.parseInt(String.valueOf(jsonOb.get("tran_amt")));
+            totalPayment += Integer.parseInt(String.valueOf(jsonOb.get("tran_amt")).replace(",",""));
         }
 
-        return totalPayment;
+        String totalPay = String.format("%,d",totalPayment);
+
+        return totalPay;
     }
 
 
