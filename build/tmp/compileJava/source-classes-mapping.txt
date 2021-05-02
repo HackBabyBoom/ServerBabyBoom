@@ -27,8 +27,8 @@ com/example/demo/src/test/TestController.java
  com.example.demo.src.test.TestController
 com/example/demo/config/secret/Secret.java
  com.example.demo.config.secret.Secret
-com/example/demo/src/wooriOpenAPI/MoneyBookDetailPageController.java
- com.example.demo.src.wooriOpenAPI.MoneyBookDetailPageController
+com/example/demo/src/externalOpenAPI/AWSDao.java
+ com.example.demo.src.externalOpenAPI.AWSDao
 com/example/demo/DemoApplication.java
  com.example.demo.DemoApplication
 com/example/demo/config/BaseException.java
@@ -45,8 +45,6 @@ com/example/demo/src/externalOpenAPI/GiroController.java
  com.example.demo.src.externalOpenAPI.GiroController
 com/example/demo/src/user/model/GetUserRes.java
  com.example.demo.src.user.model.GetUserRes
-com/example/demo/src/externalOpenAPI/AWSDao.java
- com.example.demo.src.externalOpenAPI.AWSDao
 com/example/demo/src/wooriOpenAPI/TransactionPageController.java
  com.example.demo.src.wooriOpenAPI.TransactionPageController
 com/example/demo/src/externalOpenAPI/OpenBankingController.java
@@ -55,3 +53,5 @@ com/example/demo/src/wooriOpenAPI/MoneyBookPageController.java
  com.example.demo.src.wooriOpenAPI.MoneyBookPageController
 com/example/demo/src/wooriOpenAPI/MainPageController.java
  com.example.demo.src.wooriOpenAPI.MainPageController
+com/example/demo/src/wooriOpenAPI/MoneyBookDetailPageController.java
+ com.example.demo.src.wooriOpenAPI.MoneyBookDetailPageController

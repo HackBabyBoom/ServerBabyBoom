@@ -45,6 +45,7 @@ public class OpenBankingController { // 금융결제원 Open API 이용하는 �
     private String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiIxMTAwNzcyMDgyIiwic2NvcGUiOlsiaW5xdWlyeSIsImxvZ2luIiwidHJhbnNmZXIiXSwiaXNzIjoiaHR0cHM6Ly93d3cub3BlbmJhbmtpbmcub3Iua3IiLCJleHAiOjE2MjcwNTUxODUsImp0aSI6IjkyZWU3NzZjLTIyMDUtNGIxMS1hNTJkLTJiY2Y3MmVjOTY3OSJ9.8vBKGflc8RtuqSAEIaP2DynZG4RabYYywGHVedGxfqg";
     private String header = "Bearer " + token;
     private String user_seq_no = "1100772082";
+    AWSDao aws = new AWSDao();
 
     private static final Logger logger = LogManager.getLogger(OpenBankingController.class.getName());
 
@@ -147,6 +148,7 @@ public class OpenBankingController { // 금융결제원 Open API 이용하는 �
     public JSONArray getAllAccountWithdrawalAndPercent() throws ParseException {
         JSONArray[] allAccountTransactionLists = getAllAccountTransactionList();
         String [] cardName = {"하나체크카드", "신한체크카드", "IBK기업체크카드","우리체크카드"};
+
         JSONArray allAccountWithdrawal = new JSONArray();
         int [] allAcountWithdrawallList = getAllAccountWithdrawal();
         String sumOfAllAccountWithdrawal= getSumOfAllAccountWithdrawal().replace(",","");
@@ -412,7 +414,14 @@ public class OpenBankingController { // 금융결제원 Open API 이용하는 �
     @GetMapping("/getDepositAndWithdrawalListByDay")  // 날짜 별 입출금 내역 + 은행 이름까지 추가
     public JSONArray getDepositAndWithdrawalListByDay(String date) throws ParseException {
 //        date = "20210430"; // 테스트용
-        String [] cardName = {"하나", "신한", "기업","우리"};
+        String [] cardName = {"hana", "shinhan", "ibk","uri"};
+        URI [] cardImg = new URI[4];
+        for( int i=0; i<4; i++ ){
+            String name = cardName[i] +"logo.png";
+            S3Object object = aws.getS3Client().getObject(new GetObjectRequest(aws.getBucketName(),name));
+            cardImg[i] = object.getObjectContent().getHttpRequest().getURI();
+        }
+
         JSONArray[] allAccountTransactionLists = getAllAccountTransactionList();
         JSONArray depositAndWithdrawalListByDay = new JSONArray();
 
@@ -428,6 +437,7 @@ public class OpenBankingController { // 금융결제원 Open API 이용하는 �
                     jsonOb.remove("inout_type");
                     jsonOb.remove("tran_date");
                     jsonOb.put("bank_name",cardName[accountIndex]);
+                    jsonOb.put("img_url",cardImg[accountIndex]);
                     depositAndWithdrawalListByDay.add(jsonOb);
                 }
             }
@@ -503,7 +513,6 @@ public class OpenBankingController { // 금융결제원 Open API 이용하는 �
     @GetMapping("/getRecommendCard") // flask에서 추천카드를 받아옴 (Max Count 기준)
     public JSONArray getRecommendCard() {
 
-        AWSDao aws = new AWSDao();
         JSONArray cardList = new JSONArray();
 
         JSONObject card1 = new JSONObject();
