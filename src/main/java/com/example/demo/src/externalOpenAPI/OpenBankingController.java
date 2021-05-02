@@ -149,6 +149,14 @@ public class OpenBankingController { // 금융결제원 Open API 이용하는 �
         JSONArray[] allAccountTransactionLists = getAllAccountTransactionList();
         String [] cardName = {"하나체크카드", "신한체크카드", "IBK기업체크카드","우리체크카드"};
 
+        String [] cardNameENG = {"hana", "shinhan", "ibk","uri"};
+        URI [] cardImg = new URI[4];
+        for( int i=0; i<4; i++ ){
+            String name = cardNameENG[i] +"logo.png";
+            S3Object object = aws.getS3Client().getObject(new GetObjectRequest(aws.getBucketName(),name));
+            cardImg[i] = object.getObjectContent().getHttpRequest().getURI();
+        }
+
         JSONArray allAccountWithdrawal = new JSONArray();
         int [] allAcountWithdrawallList = getAllAccountWithdrawal();
         String sumOfAllAccountWithdrawal= getSumOfAllAccountWithdrawal().replace(",","");
@@ -157,6 +165,7 @@ public class OpenBankingController { // 금융결제원 Open API 이용하는 �
             JSONObject jsonObject = new JSONObject();
             JSONObject cardObject = new JSONObject();
             cardObject.put("card_name",cardName[accountIndex]);
+            cardObject.put("img_url",cardImg[accountIndex]);
             cardObject.put("card_cunsumption",String.format("%,d", allAcountWithdrawallList[accountIndex] ));
             int percent = (int)( (double) allAcountWithdrawallList[accountIndex] / ((double)Integer.parseInt(sumOfAllAccountWithdrawal)) * 100.0);
 
@@ -500,9 +509,13 @@ public class OpenBankingController { // 금융결제원 Open API 이용하는 �
         for(String str : responseArr){
             JSONObject jsonObject = new JSONObject();
             str = str.replace(" ","").replace("\"","");
-            jsonObject.put("print_content",str.split(":")[0]);
+            String store = str.split(":")[0];
+            jsonObject.put("print_content",store);
             String payment = String.format("%,d",Integer.parseInt(String.valueOf(str.split(":")[1])));
             jsonObject.put("tran_amt",payment);
+            S3Object object = aws.getS3Client().getObject(new GetObjectRequest(aws.getBucketName(),(store+".png")));
+            URI storeIMG = object.getObjectContent().getHttpRequest().getURI();
+            jsonObject.put("img_url",storeIMG);
             rankList.add(jsonObject);
         }
         return rankList;
