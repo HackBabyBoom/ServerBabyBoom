@@ -465,7 +465,7 @@ public class OpenBankingController { // 금융결제원 Open API 이용하는 �
 
 
     @ResponseBody
-    @GetMapping("/getRankList") // flask에서 매장 랭크를 받아옴
+    @GetMapping("/getRankList") // flask에서 매장 순위를 받아옴
     public JSONArray getRankList() throws ParseException, IOException {
 
         String apiURL = "http://localhost:5000/getRank";
@@ -482,8 +482,18 @@ public class OpenBankingController { // 금융결제원 Open API 이용하는 �
             jsonObject.put("tran_amt",payment);
             rankList.add(jsonObject);
         }
-
         return rankList;
+    }
+
+
+    @ResponseBody
+    @GetMapping("/getRecommendCard") // flask에서 추천카드를 받아옴 (Max Count 기준)
+    public String getRecommendCard() {
+
+        String apiURL = "http://localhost:5000/getRecommendCardBycount";
+        String response = goConnection(apiURL);
+
+        return response;
     }
 
 }
