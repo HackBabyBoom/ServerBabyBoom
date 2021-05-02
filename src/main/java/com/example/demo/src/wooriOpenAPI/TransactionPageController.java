@@ -32,6 +32,10 @@ public class TransactionPageController { // 앱의 전체 계좌 거래내역 �
         JSONArray rankOfTransaction = openBankingController.getRankList();
         jsonObject.put("rankOfTransaction",rankOfTransaction);
 
+        // 추천카드 2개 정보
+        JSONArray cardList = openBankingController.getRecommendCard();
+        jsonObject.put("cardList",cardList);
+
         return jsonObject;
     }
 }

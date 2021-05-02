@@ -64,6 +64,15 @@ dependencies {
 
 
 
+    implementation('software.amazon.awssdk:bom:2.13.66')
+    implementation group: 'software.amazon.awssdk', name: 's3', version: '2.13.66'
+    testCompile group: 'software.amazon.awssdk', name: 's3', version: '2.13.66'
+    implementation platform('com.amazonaws:aws-java-sdk-bom:1.11.228')
+    implementation 'com.amazonaws:aws-java-sdk-s3'
+
+
+
+
 }
 
 
