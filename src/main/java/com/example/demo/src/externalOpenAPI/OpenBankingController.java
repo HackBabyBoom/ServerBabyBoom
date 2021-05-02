@@ -1,6 +1,17 @@
 package com.example.demo.src.externalOpenAPI;
 
 //import org.apache.tomcat.util.json.JSONParser;
+import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.regions.Regions;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.s3.model.GetObjectRequest;
+import com.amazonaws.services.s3.model.ObjectListing;
+import com.amazonaws.services.s3.model.S3Object;
+import com.amazonaws.services.s3.model.S3ObjectSummary;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
@@ -12,6 +23,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Collections;
@@ -23,6 +35,7 @@ import org.json.simple.parser.JSONParser;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import software.amazon.awssdk.services.s3.model.ListObjectsRequest;
 
 
 @RestController
@@ -488,12 +501,34 @@ public class OpenBankingController { // 금융결제원 Open API 이용하는 �
 
     @ResponseBody
     @GetMapping("/getRecommendCard") // flask에서 추천카드를 받아옴 (Max Count 기준)
-    public String getRecommendCard() {
+    public JSONArray getRecommendCard() {
 
-        String apiURL = "http://localhost:5000/getRecommendCardBycount";
-        String response = goConnection(apiURL);
+        AWSDao aws = new AWSDao();
+        JSONArray cardList = new JSONArray();
 
-        return response;
+        JSONObject card1 = new JSONObject();
+        String apiURL1 = "http://localhost:5000/getRecommendCardByCount";
+        String response1 = goConnection(apiURL1);
+        String cardName1 = (response1.equals("WON DISCOUNT AIR")|| response1.equals("WON POINT AIR")) ? (response1+".gif") : (response1+".png");
+
+        S3Object object = aws.getS3Client().getObject(new GetObjectRequest(aws.getBucketName(),cardName1));
+        URI cardIMG1 = object.getObjectContent().getHttpRequest().getURI();
+        card1.put("card_name",response1);
+        card1.put("img_url",cardIMG1);
+        cardList.add(card1);
+
+        JSONObject card2 = new JSONObject();
+        String apiURL2 = "http://localhost:5000/getRecommendCardByVirtualScenario";
+        String response2 = goConnection(apiURL2);
+        String cardName2 = (response2.equals("WON DISCOUNT AIR")|| response2.equals("WON POINT AIR")) ? (response2+".gif") : (response2+".png");
+
+        object = aws.getS3Client().getObject(new GetObjectRequest(aws.getBucketName(),cardName2));
+        URI cardIMG2 = object.getObjectContent().getHttpRequest().getURI();
+        card2.put("card_name",response2);
+        card2.put("img_url",cardIMG2);
+        cardList.add(card2);
+
+        return cardList;
+
     }
-
 }
